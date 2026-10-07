@@ -1,10 +1,8 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#071d49">
-<title>Entrega do Luiz</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071d49"><title>Entrega do Luiz</title>
 <style>
 :root{--navy:#071d49;--blue:#0d5eea;--red:#ef233c;--green:#12b76a;--bg:#f4f6fa;--text:#13213b}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
@@ -12,127 +10,24 @@
 .brand{font-size:24px;font-weight:900;letter-spacing:.5px}.brand span{color:#ff3048}.sub{opacity:.8;font-size:13px;margin-top:4px}
 main{padding:18px}.card{background:#fff;border:1px solid #e8ebf2;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 5px 18px #0b1d4210}
 h2{font-size:20px;margin:0 0 6px}.muted{color:#667085;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#f5f7fb;border-radius:14px;padding:14px}.stat b{display:block;font-size:20px;margin-top:5px}
-button{border:0;border-radius:12px;padding:13px 15px;font-weight:800;font-size:14px;cursor:pointer;width:100%;margin-top:9px}
-.primary{background:var(--blue);color:#fff}.danger{background:var(--red);color:#fff}.success{background:var(--green);color:#fff}.ghost{background:#eef3ff;color:#174ea6}
-input,select{width:100%;padding:13px;border:1px solid #d9deea;border-radius:11px;margin:6px 0 9px;font-size:14px}
-label{font-size:12px;font-weight:700;color:#475467}.hidden{display:none}.pill{display:inline-block;padding:7px 10px;border-radius:999px;background:#e9f9f0;color:#087a45;font-size:12px;font-weight:800}
-.delivery{border:1px solid #dfe5f0;border-radius:15px;padding:14px;margin-top:10px}.delivery strong{font-size:15px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.money{font-weight:900;color:#0b7c48}
-.nav{position:sticky;bottom:0;background:#fff;border-top:1px solid #e7eaf0;display:grid;grid-template-columns:repeat(3,1fr);padding:9px}.nav button{margin:0;background:transparent;color:#475467}.nav button.active{color:var(--blue)}
-.small{font-size:11px;color:#667085;line-height:1.4}.back{background:none;color:#fff;width:auto;padding:0;margin:0 0 14px}
-</style>
-</head>
-<body>
-<div class="app">
-<header class="top">
-  <button class="back" onclick="goHome()">← Início</button>
-  <div class="brand">ENTREGA DO <span>LUIZ</span></div>
-  <div class="sub">Lanchonete do Luiz • Miraí-MG</div>
-</header>
-
-<main>
-<section id="home">
-  <div class="card">
-    <h2>Como você quer entrar?</h2>
-    <p class="muted">Escolha o perfil para testar o protótipo.</p>
-    <button class="primary" onclick="show('riderLogin')">🛵 Sou motoboy parceiro</button>
-    <button class="ghost" onclick="show('storeLogin')">🍔 Sou da lanchonete</button>
-  </div>
-  <div class="card">
-    <h2>Fluxo da primeira versão</h2>
-    <div class="small">Cadastro → disponibilidade → chamada → aceite → retirada → entrega → histórico e valores.</div>
-  </div>
-</section>
-
-<section id="riderLogin" class="hidden">
- <div class="card">
-  <h2>Motoboy parceiro</h2><p class="muted">Entre para testar as entregas.</p>
-  <input id="riderName" placeholder="Seu nome">
-  <button class="primary" onclick="riderEnter()">Entrar</button>
-  <button class="ghost" onclick="show('riderRegister')">Ainda não sou cadastrado</button>
- </div>
-</section>
-
-<section id="riderRegister" class="hidden">
- <div class="card"><h2>Cadastro do motoboy</h2><p class="muted">Protótipo: os dados ficam somente neste aparelho.</p>
- <label>Nome completo</label><input id="regName" placeholder="Nome">
- <label>Telefone</label><input id="regPhone" placeholder="(32) 99999-9999">
- <label>CPF</label><input id="regCpf" placeholder="000.000.000-00">
- <label>Chave PIX</label><input id="regPix" placeholder="Chave PIX">
- <label>Modelo da moto</label><input id="regMoto" placeholder="Ex.: Honda CG 160">
- <button class="primary" onclick="register()">Cadastrar e entrar</button></div>
-</section>
-
-<section id="rider" class="hidden">
- <div class="card"><div class="row"><div><h2 id="riderHello">Olá!</h2><div class="muted">Motoboy parceiro</div></div><span id="status" class="pill">Disponível</span></div>
- <button id="toggle" class="success" onclick="toggleStatus()">Ficar indisponível</button></div>
- <div class="grid">
-  <div class="stat">Entregas hoje<b id="rToday">0</b></div>
-  <div class="stat">Hoje<b id="rMoney">R$ 0,00</b></div>
- </div>
- <div class="card"><h2>Nova entrega</h2><div id="rDelivery"></div></div>
- <div class="card"><h2>Histórico</h2><div id="rHistory"></div></div>
-</section>
-
-<section id="storeLogin" class="hidden">
- <div class="card"><h2>Painel da Lanchonete</h2><p class="muted">Acesso de teste.</p>
- <input placeholder="Usuário" value="lanchonete">
- <input placeholder="Senha" type="password" value="1234">
- <button class="primary" onclick="storeEnter()">Entrar</button></div>
-</section>
-
-<section id="store" class="hidden">
- <div class="card"><div class="row"><div><h2>Lanchonete do Luiz</h2><div class="muted">Painel de entregas</div></div><span class="pill" id="onlineCount">0 disponíveis</span></div></div>
- <div class="grid">
-  <div class="stat">Em andamento<b id="sOpen">0</b></div>
-  <div class="stat">Concluídas<b id="sDone">0</b></div>
- </div>
- <div class="card"><h2>Nova entrega</h2>
-  <label>Cliente</label><input id="client" placeholder="Nome do cliente">
-  <label>Endereço</label><input id="address" placeholder="Rua e número">
-  <label>Valor da entrega</label><input id="fee" type="number" step=".50" value="7">
-  <button class="primary" onclick="createDelivery()">Criar chamada para motoboys</button>
- </div>
- <div class="card"><h2>Entregas</h2><div id="sDeliveries"></div></div>
-</section>
-</main>
-<div class="nav">
- <button class="active" onclick="goHome()">⌂ Início</button>
- <button onclick="show('riderLogin')">🛵 Motoboy</button>
- <button onclick="show('storeLogin')">🍔 Lanchonete</button>
-</div>
-</div>
+button{border:0;border-radius:12px;padding:13px 15px;font-weight:800;font-size:14px;cursor:pointer;width:100%;margin-top:9px}.primary{background:var(--blue);color:#fff}.danger{background:var(--red);color:#fff}.success{background:var(--green);color:#fff}.ghost{background:#eef3ff;color:#174ea6}
+input{width:100%;padding:13px;border:1px solid #d9deea;border-radius:11px;margin:6px 0 9px;font-size:14px}label{font-size:12px;font-weight:700;color:#475467}.hidden{display:none}.pill{display:inline-block;padding:7px 10px;border-radius:999px;background:#e9f9f0;color:#087a45;font-size:12px;font-weight:800}
+.delivery{border:1px solid #dfe5f0;border-radius:15px;padding:14px;margin-top:10px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.money{font-weight:900;color:#0b7c48}
+.nav{position:sticky;bottom:0;background:#fff;border-top:1px solid #e7eaf0;display:grid;grid-template-columns:repeat(3,1fr);padding:9px}.nav button{margin:0;background:transparent;color:#475467}.nav button.active{color:var(--blue)}.small{font-size:11px;color:#667085;line-height:1.4}.back{background:none;color:#fff;width:auto;padding:0;margin:0 0 14px}
+</style></head><body><div class="app"><header class="top"><button class="back" onclick="goHome()">← Início</button><div class="brand">ENTREGA DO <span>LUIZ</span></div><div class="sub">Lanchonete do Luiz • Miraí-MG</div></header>
+<main><section id="home"><div class="card"><h2>Como você quer entrar?</h2><p class="muted">Escolha o perfil para testar o protótipo.</p><button class="primary" onclick="show('riderLogin')">🛵 Sou motoboy parceiro</button><button class="ghost" onclick="show('storeLogin')">🍔 Sou da lanchonete</button></div><div class="card"><h2>Fluxo da primeira versão</h2><div class="small">Cadastro → disponibilidade → chamada → aceite → retirada → entrega → histórico e valores.</div></div></section>
+<section id="riderLogin" class="hidden"><div class="card"><h2>Motoboy parceiro</h2><input id="riderName" placeholder="Seu nome"><button class="primary" onclick="riderEnter()">Entrar</button><button class="ghost" onclick="show('riderRegister')">Ainda não sou cadastrado</button></div></section>
+<section id="riderRegister" class="hidden"><div class="card"><h2>Cadastro do motoboy</h2><p class="muted">Protótipo: os dados ficam somente neste aparelho.</p><label>Nome completo</label><input id="regName"><label>Telefone</label><input id="regPhone"><label>CPF</label><input id="regCpf"><label>Chave PIX</label><input id="regPix"><label>Modelo da moto</label><input id="regMoto"><button class="primary" onclick="register()">Cadastrar e entrar</button></div></section>
+<section id="rider" class="hidden"><div class="card"><div class="row"><div><h2 id="riderHello">Olá!</h2><div class="muted">Motoboy parceiro</div></div><span id="status" class="pill">Disponível</span></div><button id="toggle" class="success" onclick="toggleStatus()">Ficar indisponível</button></div><div class="grid"><div class="stat">Entregas hoje<b id="rToday">0</b></div><div class="stat">Hoje<b id="rMoney">R$ 0,00</b></div></div><div class="card"><h2>Nova entrega</h2><div id="rDelivery"></div></div><div class="card"><h2>Histórico</h2><div id="rHistory"></div></div></section>
+<section id="storeLogin" class="hidden"><div class="card"><h2>Painel da Lanchonete</h2><p class="muted">Acesso de teste.</p><input value="lanchonete"><input type="password" value="1234"><button class="primary" onclick="storeEnter()">Entrar</button></div></section>
+<section id="store" class="hidden"><div class="card"><div class="row"><div><h2>Lanchonete do Luiz</h2><div class="muted">Painel de entregas</div></div><span class="pill" id="onlineCount">0 disponíveis</span></div></div><div class="grid"><div class="stat">Em andamento<b id="sOpen">0</b></div><div class="stat">Concluídas<b id="sDone">0</b></div></div><div class="card"><h2>Nova entrega</h2><label>Cliente</label><input id="client"><label>Endereço</label><input id="address"><label>Valor da entrega</label><input id="fee" type="number" step=".50" value="7"><button class="primary" onclick="createDelivery()">Criar chamada para motoboys</button></div><div class="card"><h2>Entregas</h2><div id="sDeliveries"></div></div></section></main>
+<div class="nav"><button class="active" onclick="goHome()">⌂ Início</button><button onclick="show('riderLogin')">🛵 Motoboy</button><button onclick="show('storeLogin')">🍔 Lanchonete</button></div></div>
 <script>
 let db=JSON.parse(localStorage.getItem('edl')||'{"rider":null,"deliveries":[],"history":[]}');
-let currentRole=null;
-function save(){localStorage.setItem('edl',JSON.stringify(db));render()}
-function hideAll(){document.querySelectorAll('main>section').forEach(x=>x.classList.add('hidden'))}
-function show(id){hideAll();document.getElementById(id).classList.remove('hidden');window.scrollTo(0,0)}
-function goHome(){show('home')}
-function register(){db.rider={name:regName.value||'Motoboy',phone:regPhone.value,cpf:regCpf.value,pix:regPix.value,moto:regMoto.value,status:true};save();currentRole='rider';show('rider')}
-function riderEnter(){db.rider=db.rider||{name:riderName.value||'Motoboy',status:true};save();currentRole='rider';show('rider')}
-function storeEnter(){currentRole='store';show('store');render()}
-function toggleStatus(){if(!db.rider)return;db.rider.status=!db.rider.status;save()}
-function createDelivery(){let d={id:'#'+Math.floor(1000+Math.random()*9000),client:client.value||'Cliente',address:address.value||'Endereço não informado',fee:Number(fee.value||7),status:'Aguardando motoboy',created:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})};db.deliveries.unshift(d);save();client.value='';address.value='';}
-function accept(id){let d=db.deliveries.find(x=>x.id===id);if(!d)return;d.status='Aceita por '+(db.rider?.name||'motoboy');save()}
-function pickup(id){let d=db.deliveries.find(x=>x.id===id);if(d){d.status='Em entrega';save()}}
-function finish(id){let d=db.deliveries.find(x=>x.id===id);if(d&&d.status!=='Concluída'){d.status='Concluída';db.history.unshift(d);save()}}
-function render(){
- document.getElementById('status').textContent=db.rider?.status?'Disponível':'Indisponível';
- document.getElementById('status').style.background=db.rider?.status?'#e9f9f0':'#f2f4f7';
- document.getElementById('status').style.color=db.rider?.status?'#087a45':'#475467';
- document.getElementById('toggle').textContent=db.rider?.status?'Ficar indisponível':'Ficar disponível';
- document.getElementById('toggle').className=db.rider?.status?'danger':'success';
- document.getElementById('riderHello').textContent='Olá, '+(db.rider?.name||'Motoboy')+'!';
- let hist=db.history||[]; document.getElementById('rToday').textContent=hist.length;
- document.getElementById('rMoney').textContent='R$ '+hist.reduce((a,d)=>a+d.fee,0).toFixed(2).replace('.',',');
- let open=db.deliveries.filter(d=>d.status!=='Concluída');
- document.getElementById('rDelivery').innerHTML=(db.rider?.status&&open.length)?open.map(d=>`<div class="delivery"><div class="row"><strong>${d.id}</strong><span class="money">R$ ${d.fee.toFixed(2).replace('.',',')}</span></div><p>${d.client}<br>${d.address}</p>${d.status==='Aguardando motoboy'?`<button class="success" onclick="accept('${d.id}')">Aceitar entrega</button>`:''}${d.status.startsWith('Aceita')?`<button class="primary" onclick="pickup('${d.id}')">Confirmar retirada</button>`:''}${d.status==='Em entrega'?`<button class="success" onclick="finish('${d.id}')">Confirmar entrega</button>`:''}</div>`).join(''):'<p class="muted">Nenhuma entrega disponível no momento.</p>';
- document.getElementById('rHistory').innerHTML=hist.length?hist.map(d=>`<div class="delivery"><div class="row"><strong>${d.id}</strong><span class="money">R$ ${d.fee.toFixed(2).replace('.',',')}</span></div><div class="small">${d.address} • Concluída</div></div>`).join(''):'<p class="muted">Sem entregas concluídas.</p>';
- let done=db.deliveries.filter(d=>d.status==='Concluída').length;
- document.getElementById('sOpen').textContent=open.length;document.getElementById('sDone').textContent=done;
- document.getElementById('onlineCount').textContent=(db.rider?.status?1:0)+' disponível';
- document.getElementById('sDeliveries').innerHTML=db.deliveries.length?db.deliveries.map(d=>`<div class="delivery"><div class="row"><strong>${d.id} • ${d.client}</strong><span class="money">R$ ${d.fee.toFixed(2).replace('.',',')}</span></div><div class="small">${d.address}<br>Status: ${d.status}</div></div>`).join(''):'<p class="muted">Nenhuma entrega cadastrada.</p>';
-}
+function save(){localStorage.setItem('edl',JSON.stringify(db));render()}function hideAll(){document.querySelectorAll('main>section').forEach(x=>x.classList.add('hidden'))}function show(id){hideAll();document.getElementById(id).classList.remove('hidden');scrollTo(0,0)}function goHome(){show('home')}
+function register(){db.rider={name:regName.value||'Motoboy',phone:regPhone.value,cpf:regCpf.value,pix:regPix.value,moto:regMoto.value,status:true};save();show('rider')}function riderEnter(){db.rider=db.rider||{name:riderName.value||'Motoboy',status:true};save();show('rider')}function storeEnter(){show('store');render()}function toggleStatus(){if(!db.rider)return;db.rider.status=!db.rider.status;save()}
+function createDelivery(){let d={id:'#'+Math.floor(1000+Math.random()*9000),client:client.value||'Cliente',address:address.value||'Endereço não informado',fee:Number(fee.value||7),status:'Aguardando motoboy'};db.deliveries.unshift(d);save();client.value='';address.value=''}
+function accept(id){let d=db.deliveries.find(x=>x.id===id);if(d){d.status='Aceita por '+(db.rider?.name||'motoboy');save()}}function pickup(id){let d=db.deliveries.find(x=>x.id===id);if(d){d.status='Em entrega';save()}}function finish(id){let d=db.deliveries.find(x=>x.id===id);if(d&&d.status!=='Concluída'){d.status='Concluída';db.history.unshift(d);save()}}
+function render(){status.textContent=db.rider?.status?'Disponível':'Indisponível';toggle.textContent=db.rider?.status?'Ficar indisponível':'Ficar disponível';toggle.className=db.rider?.status?'danger':'success';riderHello.textContent='Olá, '+(db.rider?.name||'Motoboy')+'!';let hist=db.history||[];rToday.textContent=hist.length;rMoney.textContent='R$ '+hist.reduce((a,d)=>a+d.fee,0).toFixed(2).replace('.',',');let open=db.deliveries.filter(d=>d.status!=='Concluída');rDelivery.innerHTML=(db.rider?.status&&open.length)?open.map(d=>`<div class="delivery"><div class="row"><strong>${d.id}</strong><span class="money">R$ ${d.fee.toFixed(2).replace('.',',')}</span></div><p>${d.client}<br>${d.address}</p>${d.status==='Aguardando motoboy'?`<button class="success" onclick="accept('${d.id}')">Aceitar entrega</button>`:''}${d.status.startsWith('Aceita')?`<button class="primary" onclick="pickup('${d.id}')">Confirmar retirada</button>`:''}${d.status==='Em entrega'?`<button class="success" onclick="finish('${d.id}')">Confirmar entrega</button>`:''}</div>`).join(''):'<p class="muted">Nenhuma entrega disponível no momento.</p>';rHistory.innerHTML=hist.length?hist.map(d=>`<div class="delivery"><strong>${d.id}</strong> • R$ ${d.fee.toFixed(2).replace('.',',')}</div>`).join(''):'<p class="muted">Sem entregas concluídas.</p>';sOpen.textContent=open.length;sDone.textContent=db.deliveries.filter(d=>d.status==='Concluída').length;onlineCount.textContent=(db.rider?.status?1:0)+' disponível';sDeliveries.innerHTML=db.deliveries.length?db.deliveries.map(d=>`<div class="delivery"><strong>${d.id} • ${d.client}</strong><div class="small">${d.address}<br>Status: ${d.status}</div></div>`).join(''):'<p class="muted">Nenhuma entrega cadastrada.</p>'}
 render();goHome();
-</script>
-</body></html>
+</script></body></html>
