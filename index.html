@@ -16,13 +16,113 @@ input{width:100%;padding:13px;border:1px solid #d9deea;border-radius:11px;margin
 .nav{position:sticky;bottom:0;background:#fff;border-top:1px solid #e7eaf0;display:grid;grid-template-columns:repeat(3,1fr);padding:9px}.nav button{margin:0;background:transparent;color:#475467}.nav button.active{color:var(--blue)}.small{font-size:11px;color:#667085;line-height:1.4}.back{background:none;color:#fff;width:auto;padding:0;margin:0 0 14px}
 </style></head><body><div class="app"><header class="top"><button class="back" onclick="goHome()">← Início</button><div class="brand">ENTREGA DO <span>LUIZ</span></div><div class="sub">Lanchonete do Luiz • Miraí-MG</div></header>
 <main><section id="home"><div class="card"><h2>Como você quer entrar?</h2><p class="muted">Escolha o perfil para testar o protótipo.</p><button class="primary" onclick="show('riderLogin')">🛵 Sou motoboy parceiro</button><button class="ghost" onclick="show('storeLogin')">🍔 Sou da lanchonete</button></div><div class="card"><h2>Fluxo da primeira versão</h2><div class="small">Cadastro → disponibilidade → chamada → aceite → retirada → entrega → histórico e valores.</div></div></section>
-<section id="riderLogin" class="hidden"><div class="card"><h2>Motoboy parceiro</h2><input id="riderName" placeholder="Seu nome"><button class="primary" onclick="riderEnter()">Entrar</button><button class="ghost" onclick="show('riderRegister')">Ainda não sou cadastrado</button></div></section>
-<section id="riderRegister" class="hidden"><div class="card"><h2>Cadastro do motoboy</h2><p class="muted">Protótipo: os dados ficam somente neste aparelho.</p><label>Nome completo</label><input id="regName"><label>Telefone</label><input id="regPhone"><label>CPF</label><input id="regCpf"><label>Chave PIX</label><input id="regPix"><label>Modelo da moto</label><input id="regMoto"><button class="primary" onclick="register()">Cadastrar e entrar</button></div></section>
+<section id="riderLogin" class="hidden"><div class="card"><h2>Motoboy parceiro</h2><input id="riderEmail" type="email" placeholder="E-mail"><input id="riderPassword" type="password" placeholder="Senha"><button class="primary" onclick="login('rider')">Entrar</button><button class="ghost" onclick="show('riderRegister')">Ainda não sou cadastrado</button></div></section>
+<section id="riderRegister" class="hidden"><div class="card"><h2>Cadastro do motoboy</h2><p class="muted">Cadastro sujeito à aprovação da lanchonete.</p><label>Nome completo</label><input id="regName"><label>Telefone</label><input id="regPhone"><label>E-mail</label><input id="regEmail" type="email"><label>Senha (mínimo 6 caracteres)</label><input id="regPassword" type="password"><label>Modelo da moto</label><input id="regMoto"><button class="primary" onclick="register()">Cadastrar e entrar</button></div></section>
 <section id="rider" class="hidden"><div class="card"><div class="row"><div><h2 id="riderHello">Olá!</h2><div class="muted">Motoboy parceiro</div></div><span id="status" class="pill">Disponível</span></div><button id="toggle" class="success" onclick="toggleStatus()">Ficar indisponível</button></div><div class="grid"><div class="stat">Entregas hoje<b id="rToday">0</b></div><div class="stat">Hoje<b id="rMoney">R$ 0,00</b></div></div><div class="card"><h2>Nova entrega</h2><div id="rDelivery"></div></div><div class="card"><h2>Histórico</h2><div id="rHistory"></div></div></section>
-<section id="storeLogin" class="hidden"><div class="card"><h2>Painel da Lanchonete</h2><p class="muted">Acesso de teste.</p><input value="lanchonete"><input type="password" value="1234"><button class="primary" onclick="storeEnter()">Entrar</button></div></section>
-<section id="store" class="hidden"><div class="card"><div class="row"><div><h2>Lanchonete do Luiz</h2><div class="muted">Painel de entregas</div></div><span class="pill" id="onlineCount">0 disponíveis</span></div></div><div class="grid"><div class="stat">Em andamento<b id="sOpen">0</b></div><div class="stat">Concluídas<b id="sDone">0</b></div></div><div class="card"><h2>Nova entrega</h2><label>Cliente</label><input id="client"><label>Endereço</label><input id="address"><label>Valor da entrega</label><input id="fee" type="number" step=".50" value="7"><button class="primary" onclick="createDelivery()">Criar chamada para motoboys</button></div><div class="card"><h2>Entregas</h2><div id="sDeliveries"></div></div></section></main>
+<section id="storeLogin" class="hidden"><div class="card"><h2>Painel da Lanchonete</h2><p class="muted">Acesso exclusivo do administrador.</p><input id="storeEmail" type="email" placeholder="E-mail"><input id="storePassword" type="password" placeholder="Senha"><button class="primary" onclick="login('store')">Entrar</button></div></section>
+<section id="store" class="hidden"><div class="card"><div class="row"><div><h2>Lanchonete do Luiz</h2><div class="muted">Painel de entregas</div></div><span class="pill" id="onlineCount">0 disponíveis</span></div></div><div class="grid"><div class="stat">Em andamento<b id="sOpen">0</b></div><div class="stat">Concluídas<b id="sDone">0</b></div></div><div class="card"><h2>Nova entrega</h2><label>Cliente</label><input id="client"><label>Endereço</label><input id="address"><label>Valor da entrega</label><input id="fee" type="number" step=".50" value="7"><button class="primary" onclick="createDelivery()">Criar chamada para motoboys</button></div><div class="card"><h2>Motoboys aguardando aprovação</h2><div id="pendingRiders"></div></div><div class="card"><h2>Entregas</h2><div id="sDeliveries"></div></div></section></main>
 <div class="nav"><button class="active" onclick="goHome()">⌂ Início</button><button onclick="show('riderLogin')">🛵 Motoboy</button><button onclick="show('storeLogin')">🍔 Lanchonete</button></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 <script>
+/* Firebase configuration: verify these values in Firebase Console > Project settings. */
+const firebaseConfig={
+ apiKey:"AIzaSyBk8hJ6V7_yDp8C_In-ddXn6uETLQdF8Pg",
+ authDomain:"entrega-do-luiz.firebaseapp.com",
+ databaseURL:"https://entrega-do-luiz-default-rtdb.firebaseio.com",
+ projectId:"entrega-do-luiz"
+};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(), realtime=firebase.database();
+let currentUser=null, role=null, riderProfile=null, deliveries={}, riders={};
+const money=n=>'R$ '+Number(n||0).toFixed(2).replace('.',',');
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function show(id){document.querySelectorAll('main>section').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');window.scrollTo(0,0)}
+function goHome(){show('home')}
+function msg(x){alert(x)}
+async function login(type){
+ const email=document.getElementById(type+'Email').value.trim(),password=document.getElementById(type+'Password').value;
+ if(!email||!password)return msg('Informe e-mail e senha.');
+ try{await auth.signInWithEmailAndPassword(email,password);await enterRole(type)}catch(e){msg('Não foi possível entrar: '+e.message)}
+}
+async function enterRole(type){
+ const uid=auth.currentUser?.uid;if(!uid)return;
+ if(type==='store'){
+  const snap=await realtime.ref('admins/'+uid).once('value');
+  if(snap.val()!==true){await auth.signOut();return msg('Este usuário não é administrador.')}role='store';
+ }else{
+  const snap=await realtime.ref('riders/'+uid).once('value');
+  if(!snap.exists()){await auth.signOut();return msg('Motoboy não cadastrado.')}role='rider';riderProfile=snap.val();
+ }
+ currentUser=auth.currentUser;startListening();show(role==='store'?'store':'rider');
+}
+async function register(){
+ const name=regName.value.trim(),email=regEmail.value.trim(),password=regPassword.value,phone=regPhone.value.trim();
+ if(!name||!email||password.length<6||!phone)return msg('Preencha nome, telefone, e-mail e senha de pelo menos 6 caracteres.');
+ try{
+  const result=await auth.createUserWithEmailAndPassword(email,password);
+  const profile={name,phone,moto:regMoto.value.trim(),status:false,approved:false};
+  await realtime.ref('riders/'+result.user.uid).set(profile);
+  await auth.signOut();msg('Cadastro enviado. Aguarde aprovação da lanchonete para entrar.');show('riderLogin');
+ }catch(e){msg('Erro no cadastro: '+e.message)}
+}
+function startListening(){
+ realtime.ref('deliveries').off();realtime.ref('riders').off();
+ realtime.ref('deliveries').on('value',s=>{deliveries=s.val()||{};render()},e=>msg('Erro ao carregar entregas: '+e.message));
+ if(role==='store')realtime.ref('riders').on('value',s=>{riders=s.val()||{};render()});
+ else realtime.ref('riders/'+currentUser.uid).on('value',s=>{riderProfile=s.val()||{};if(!riderProfile.approved)msg('Seu cadastro aguarda aprovação.');render()});
+}
+async function toggleStatus(){if(!riderProfile?.approved)return msg('Aguarde aprovação da lanchonete.');await realtime.ref('riders/'+currentUser.uid+'/status').set(!riderProfile.status)}
+async function approve(uid){if(role!=='store')return;await realtime.ref('riders/'+uid+'/approved').set(true)}
+async function createDelivery(){
+ if(role!=='store')return;
+ const name=client.value.trim(),addr=address.value.trim(),value=Number(fee.value);
+ if(!name||!addr||!Number.isFinite(value)||value<0)return msg('Preencha cliente, endereço e valor válido.');
+ try{await realtime.ref('deliveries').push({client:name,address:addr,fee:value,status:'Aguardando motoboy',riderId:'',createdAt:firebase.database.ServerValue.TIMESTAMP});client.value='';address.value=''}catch(e){msg('Erro ao criar: '+e.message)}
+}
+async function accept(id){if(!riderProfile?.approved||!riderProfile.status)return;
+ const ref=realtime.ref('deliveries/'+id);
+ const res=await ref.transaction(d=>{if(!d||d.status!=='Aguardando motoboy')return;return {...d,status:'Aceita',riderId:currentUser.uid,riderName:riderProfile.name}});
+ if(!res.committed)msg('Esta entrega já foi aceita.');
+}
+async function pickup(id){await changeStatus(id,'Aceita','Em entrega')}
+async function finish(id){await changeStatus(id,'Em entrega','Concluída')}
+async function changeStatus(id,from,to){
+ if(!currentUser)return;
+ const ref=realtime.ref('deliveries/'+id);
+ const res=await ref.transaction(d=>{if(!d||d.riderId!==currentUser.uid||d.status!==from)return;return {...d,status:to}});
+ if(!res.committed)msg('Não foi possível atualizar esta entrega.');
+}
+function render(){
+ const all=Object.entries(deliveries).map(([id,d])=>({id,...d}));
+ const open=all.filter(d=>d.status!=='Concluída');
+ const done=all.filter(d=>d.status==='Concluída');
+ sOpen.textContent=open.length;sDone.textContent=done.length;
+ onlineCount.textContent=Object.values(riders).filter(r=>r.approved&&r.status).length+' disponíveis';
+ sDeliveries.innerHTML=all.length?all.map(d=>`<div class="delivery"><strong>${esc(d.client)}</strong><div class="small">${esc(d.address)}<br>${esc(d.status)} ${d.riderName?'• '+esc(d.riderName):''} • ${money(d.fee)}</div></div>`).join(''):'<p class="muted">Nenhuma entrega cadastrada.</p>';
+ const pending=Object.entries(riders).filter(([id,r])=>!r.approved);
+ document.getElementById('pendingRiders').innerHTML=pending.length?pending.map(([id,r])=>`<div class="delivery">${esc(r.name)} • ${esc(r.phone)}<button class="primary" onclick="approve('${id}')">Aprovar motoboy</button></div>`).join(''):'<p class="muted">Nenhum cadastro pendente.</p>';
+ if(!currentUser||role!=='rider')return;
+ const mine=all.filter(d=>d.riderId===currentUser.uid),completed=mine.filter(d=>d.status==='Concluída');
+ riderHello.textContent='Olá, '+(riderProfile?.name||'Motoboy')+'!';
+ status.textContent=!riderProfile?.approved?'Aguardando aprovação':riderProfile.status?'Disponível':'Indisponível';
+ toggle.textContent=riderProfile?.status?'Ficar indisponível':'Ficar disponível';
+ toggle.className=riderProfile?.status?'danger':'success';
+ rToday.textContent=completed.length;rMoney.textContent=money(completed.reduce((a,d)=>a+Number(d.fee||0),0));
+ const visible=all.filter(d=>d.riderId===currentUser.uid||(riderProfile?.approved&&riderProfile?.status&&d.status==='Aguardando motoboy'));
+ rDelivery.innerHTML=visible.length?visible.filter(d=>d.status!=='Concluída').map(d=>`<div class="delivery"><div class="row"><strong>${esc(d.client)}</strong><span class="money">${money(d.fee)}</span></div><p>${esc(d.address)}</p>${d.status==='Aguardando motoboy'?`<button class="success" onclick="accept('${d.id}')">Aceitar entrega</button>`:''}${d.status==='Aceita'?`<button class="primary" onclick="pickup('${d.id}')">Confirmar retirada</button>`:''}${d.status==='Em entrega'?`<button class="success" onclick="finish('${d.id}')">Confirmar entrega</button>`:''}</div>`).join(''):'<p class="muted">Nenhuma entrega disponível no momento.</p>';
+ rHistory.innerHTML=completed.length?completed.map(d=>`<div class="delivery">${esc(d.client)} • ${money(d.fee)}</div>`).join(''):'<p class="muted">Sem entregas concluídas.</p>';
+}
+function logout(){auth.signOut().then(()=>location.reload())}
+auth.onAuthStateChanged(async u=>{if(!u){currentUser=null;role=null;goHome();return}if(role)return;
+ const admin=await realtime.ref('admins/'+u.uid).once('value');if(admin.val()===true)return enterRole('store');
+ const rider=await realtime.ref('riders/'+u.uid).once('value');if(rider.exists())return enterRole('rider');
+});
+goHome();
+</script>
+<!-- original local demo preserved separately -->
+<script type="text/plain" id="original-demo">
 let db=JSON.parse(localStorage.getItem('edl')||'{"rider":null,"deliveries":[],"history":[]}');
 function save(){localStorage.setItem('edl',JSON.stringify(db));render()}function hideAll(){document.querySelectorAll('main>section').forEach(x=>x.classList.add('hidden'))}function show(id){hideAll();document.getElementById(id).classList.remove('hidden');scrollTo(0,0)}function goHome(){show('home')}
 function register(){db.rider={name:regName.value||'Motoboy',phone:regPhone.value,cpf:regCpf.value,pix:regPix.value,moto:regMoto.value,status:true};save();show('rider')}function riderEnter(){db.rider=db.rider||{name:riderName.value||'Motoboy',status:true};save();show('rider')}function storeEnter(){show('store');render()}function toggleStatus(){if(!db.rider)return;db.rider.status=!db.rider.status;save()}
