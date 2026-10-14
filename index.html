@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#071d49"><title>Entrega do Luiz V5</title>
+<meta name="theme-color" content="#071d49"><title>Entrega do Luiz V7</title>
 <style>
 :root{--navy:#071d49;--blue:#0d5eea;--red:#ef233c;--green:#12b76a;--bg:#f4f6fa;--text:#13213b}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
@@ -111,14 +111,16 @@ async function pickup(id){await changeStatus(id,'Aceita','Em entrega')}
 async function finish(id){await changeStatus(id,'Em entrega','Concluída')}
 async function changeStatus(id,from,to){
  if(!currentUser||role!=='rider')return msg('Entre como motoboy para atualizar a entrega.');
+ const d=deliveries[id];
+ if(!d||d.riderId!==currentUser.uid||d.status!==from)return msg('O estado da entrega mudou. Atualize e tente novamente.');
  try{
-  const result=await realtime.ref('deliveries/'+id).transaction(d=>{
-   if(!d||d.riderId!==currentUser.uid||d.status!==from)return;
-   return {...d,status:to,...(to==='Concluída'?{completedAt:firebase.database.ServerValue.TIMESTAMP}:{})};
-  },undefined,false);
-  if(!result.committed)msg('A entrega mudou de estado. Atualize a página e tente novamente.');
- }catch(e){msg('Erro ao confirmar '+(to==='Concluída'?'entrega':'retirada')+': '+e.message+'\nVerifique as regras do Firebase.');}
+  const updates={status:to};
+  if(to==='Concluída')updates.completedAt=firebase.database.ServerValue.TIMESTAMP;
+  await realtime.ref('deliveries/'+id).update(updates);
+  msg(to==='Concluída'?'Entrega concluída com sucesso!':'Retirada confirmada com sucesso!');
+ }catch(e){msg('Não foi possível confirmar: '+e.message+'\nConfira se as regras V7 foram publicadas no Firebase.');}
 }
+
 function render(){
  const all=Object.entries(deliveries).map(([id,d])=>({id,...d}));
  const open=all.filter(d=>d.status!=='Concluída');
