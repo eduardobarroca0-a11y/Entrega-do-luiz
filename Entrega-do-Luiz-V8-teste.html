@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071d49"><title>Entrega do Luiz V8 (teste)</title><link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--navy:#071d49;--blue:#0d5eea;--red:#ef233c;--green:#12b76a;--bg:#f4f6fa;--text:#13213b}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+.app{max-width:520px;margin:auto;min-height:100vh;background:#fff}.top{background:linear-gradient(145deg,#06183d,#0d4fae);color:#fff;padding:22px 18px 18px;border-radius:0 0 24px 24px}
+.brand{font-size:24px;font-weight:900;letter-spacing:.5px}.brand span{color:#ff3048}.sub{opacity:.8;font-size:13px;margin-top:4px}
+main{padding:18px}.card{background:#fff;border:1px solid #e8ebf2;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 5px 18px #0b1d4210}
+h2{font-size:20px;margin:0 0 6px}.muted{color:#667085;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#f5f7fb;border-radius:14px;padding:14px}.stat b{display:block;font-size:20px;margin-top:5px}
+button{border:0;border-radius:12px;padding:13px 15px;font-weight:800;font-size:14px;cursor:pointer;width:100%;margin-top:9px}.primary{background:var(--blue);color:#fff}.danger{background:var(--red);color:#fff}.success{background:var(--green);color:#fff}.ghost{background:#eef3ff;color:#174ea6}
+input{width:100%;padding:13px;border:1px solid #d9deea;border-radius:11px;margin:6px 0 9px;font-size:14px}label{font-size:12px;font-weight:700;color:#475467}.hidden{display:none}.pill{display:inline-block;padding:7px 10px;border-radius:999px;background:#e9f9f0;color:#087a45;font-size:12px;font-weight:800}
+.delivery{border:1px solid #dfe5f0;border-radius:15px;padding:14px;margin-top:10px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.money{font-weight:900;color:#0b7c48}
+.nav{position:sticky;bottom:0;background:#fff;border-top:1px solid #e7eaf0;display:grid;grid-template-columns:repeat(3,1fr);padding:9px}.nav button{margin:0;background:transparent;color:#475467}.nav button.active{color:var(--blue)}.small{font-size:11px;color:#667085;line-height:1.4}.back{background:none;color:#fff;width:auto;padding:0;margin:0 0 14px}
+</style></head><body><div class="app"><header class="top"><button class="back" onclick="goHome()">← Início</button><div class="brand">ENTREGA DO <span>LUIZ</span></div><div class="sub">Lanchonete do Luiz • Miraí-MG</div></header>
+<main><section id="home"><div class="card"><h2>Como você quer entrar?</h2><p class="muted">Escolha o perfil para testar o protótipo.</p><button class="primary" onclick="show('riderLogin')">🛵 Sou motoboy parceiro</button><button class="ghost" onclick="show('storeLogin')">🍔 Sou da lanchonete</button></div><div class="card"><h2>Fluxo da primeira versão</h2><div class="small">Cadastro → disponibilidade → chamada → aceite → retirada → entrega → histórico e valores.</div></div></section>
+<section id="riderLogin" class="hidden"><div class="card"><h2>Motoboy parceiro</h2><input id="riderEmail" type="email" placeholder="E-mail"><input id="riderPassword" type="password" placeholder="Senha"><button class="primary" onclick="login('rider')">Entrar</button><button class="ghost" onclick="show('riderRegister')">Ainda não sou cadastrado</button></div></section>
+<section id="riderRegister" class="hidden"><div class="card"><h2>Cadastro do motoboy</h2><p class="muted">Cadastro sujeito à aprovação da lanchonete.</p><label>Nome completo</label><input id="regName"><label>Telefone</label><input id="regPhone"><label>E-mail</label><input id="regEmail" type="email"><label>Senha (mínimo 6 caracteres)</label><input id="regPassword" type="password"><label>Modelo da moto</label><input id="regMoto"><button class="primary" onclick="register()">Cadastrar e entrar</button></div></section>
+<section id="rider" class="hidden"><div class="card"><div class="row"><div><h2 id="riderHello">Olá!</h2><div class="muted">Motoboy parceiro</div></div><span id="status" class="pill">Disponível</span></div><button id="toggle" class="success" onclick="toggleStatus()">Ficar indisponível</button></div><div class="grid"><div class="stat">Entregas hoje<b id="rToday">0</b></div><div class="stat">Hoje<b id="rMoney">R$ 0,00</b></div></div><div class="card"><h2>Notificações</h2><p class="muted">Ative para receber avisos de novas entregas no Android. O envio automático depende da configuração do servidor.</p><button class="primary" onclick="enablePush()">Ativar notificações</button><p class="small" id="pushState">Ainda não ativadas neste aparelho.</p></div><div class="card"><h2>Nova entrega</h2><div id="rDelivery"></div></div><div class="card"><h2>Histórico</h2><div id="rHistory"></div></div></section>
+<section id="storeLogin" class="hidden"><div class="card"><h2>Painel da Lanchonete</h2><p class="muted">Acesso exclusivo do administrador.</p><input id="storeEmail" type="email" placeholder="E-mail"><input id="storePassword" type="password" placeholder="Senha"><button class="primary" onclick="login('store')">Entrar</button></div></section>
+<section id="store" class="hidden"><div class="card"><div class="row"><div><h2>Lanchonete do Luiz</h2><div class="muted">Painel de entregas</div></div><span class="pill" id="onlineCount">0 disponíveis</span></div></div><div class="grid"><div class="stat">Em andamento<b id="sOpen">0</b></div><div class="stat">Concluídas<b id="sDone">0</b></div></div><div class="card"><h2>Nova entrega</h2><label>Cliente</label><input id="client"><label>Endereço</label><input id="address"><label>Valor da entrega</label><input id="fee" type="number" step="0.01" min="0" value="7"><button class="primary" onclick="createDelivery()">Criar chamada para motoboys</button></div><div class="card"><h2>Motoboys aguardando aprovação</h2><div id="pendingRiders"></div></div><div class="card"><h2>Entregas</h2><div id="sDeliveries"></div></div></section></main>
+<div class="nav"><button class="active" onclick="goHome()">⌂ Início</button><button onclick="show('riderLogin')">🛵 Motoboy</button><button onclick="show('storeLogin')">🍔 Lanchonete</button></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js"></script>
+<script>
+/* Firebase configuration: verify these values in Firebase Console > Project settings. */
+const firebaseConfig={
+ apiKey:"AIzaSyBk8hJ6V7_yDp8C_In-ddXn6uETLQdF8Pg",
+ authDomain:"entrega-do-luiz.firebaseapp.com",
+ databaseURL:"https://entrega-do-luiz-default-rtdb.firebaseio.com",
+ projectId:"entrega-do-luiz",
+ messagingSenderId:"838114642177",
+ appId:"1:838114642177:web:fed4404da01683070f7300"
+};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(), realtime=firebase.database();
+let currentUser=null, role=null, riderProfile=null, deliveries={}, riders={};
+const money=n=>'R$ '+Number(n||0).toFixed(2).replace('.',',');
+const savedFee=localStorage.getItem('edl_default_fee');
+if(savedFee!==null && Number.isFinite(Number(savedFee))) document.getElementById('fee').value=savedFee;
+document.getElementById('fee').addEventListener('change',e=>{if(e.target.value!=='' && Number.isFinite(Number(e.target.value)) && Number(e.target.value)>=0)localStorage.setItem('edl_default_fee',e.target.value)});
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function show(id){document.querySelectorAll('main>section').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');window.scrollTo(0,0)}
+function goHome(){show('home')}
+function msg(x){alert(x)}
+async function login(type){
+ const email=document.getElementById(type+'Email').value.trim(),password=document.getElementById(type+'Password').value;
+ if(!email||!password)return msg('Informe e-mail e senha.');
+ try{await auth.signInWithEmailAndPassword(email,password);await enterRole(type)}catch(e){msg('Não foi possível entrar: '+e.message)}
+}
+async function enterRole(type){
+ const uid=auth.currentUser?.uid;if(!uid)return;
+ if(type==='store'){
+  const snap=await realtime.ref('admins/'+uid).once('value');
+  if(snap.val()!==true){await auth.signOut();return msg('Este usuário não é administrador.')}role='store';
+ }else{
+  const snap=await realtime.ref('riders/'+uid).once('value');
+  if(!snap.exists()){await auth.signOut();return msg('Motoboy não cadastrado.')}role='rider';riderProfile=snap.val();
+ }
+ currentUser=auth.currentUser;startListening();show(role==='store'?'store':'rider');
+}
+async function register(){
+ const name=regName.value.trim(),email=regEmail.value.trim(),password=regPassword.value,phone=regPhone.value.trim();
+ if(!name||!email||password.length<6||!phone)return msg('Preencha nome, telefone, e-mail e senha de pelo menos 6 caracteres.');
+ try{
+  const result=await auth.createUserWithEmailAndPassword(email,password);
+  const profile={name,phone,moto:regMoto.value.trim(),status:false,approved:false};
+  await realtime.ref('riders/'+result.user.uid).set(profile);
+  await auth.signOut();msg('Cadastro enviado. Aguarde aprovação da lanchonete para entrar.');show('riderLogin');
+ }catch(e){msg('Erro no cadastro: '+e.message)}
+}
+function startListening(){
+ realtime.ref('deliveries').off();realtime.ref('riders').off();
+ realtime.ref('deliveries').on('value',s=>{deliveries=s.val()||{};render()},e=>msg('Erro ao carregar entregas: '+e.message));
+ if(role==='store')realtime.ref('riders').on('value',s=>{riders=s.val()||{};render()});
+ else realtime.ref('riders/'+currentUser.uid).on('value',s=>{riderProfile=s.val()||{};if(!riderProfile.approved)msg('Seu cadastro aguarda aprovação.');render()});
+}
+async function toggleStatus(){if(!riderProfile?.approved)return msg('Aguarde aprovação da lanchonete.');await realtime.ref('riders/'+currentUser.uid+'/status').set(!riderProfile.status)}
+async function approve(uid){if(role!=='store')return;await realtime.ref('riders/'+uid+'/approved').set(true)}
+async function createDelivery(){
+ if(role!=='store')return;
+ const name=client.value.trim(),addr=address.value.trim(),value=Number(fee.value);
+ if(!name||!addr||fee.value.trim()===''||!Number.isFinite(value)||value<0)return msg('Preencha cliente, endereço e valor válido.');
+ try{await realtime.ref('deliveries').push({client:name,address:addr,fee:value,status:'Aguardando motoboy',riderId:'',createdAt:firebase.database.ServerValue.TIMESTAMP});client.value='';address.value=''}catch(e){msg('Erro ao criar: '+e.message)}
+}
+async function editFee(id){
+ if(role!=='store'||!currentUser)return msg('Acesso restrito à lanchonete.');
+ const d=deliveries[id];
+ if(!d||d.status!=='Aguardando motoboy')return msg('Só é possível alterar entregas ainda não aceitas.');
+ const answer=prompt('Novo valor da entrega em R$:',Number(d.fee||0).toFixed(2).replace('.',','));
+ if(answer===null)return;
+ const normalized=answer.trim().replace(',','.');
+ if(!normalized||!/^\d+(\.\d{1,2})?$/.test(normalized))return msg('Informe um valor válido, como 3,00.');
+ const newFee=Number(normalized);
+ try{const res=await realtime.ref('deliveries/'+id).transaction(old=>{if(!old||old.status!=='Aguardando motoboy')return;return {...old,fee:newFee}});if(!res.committed)msg('Entrega já aceita ou alterada.');}
+ catch(e){msg('Não foi possível alterar o valor: '+e.message)}
+}
+// Transições atômicas: exibem erros reais de permissão/conexão para diagnóstico.
+async function accept(id){
+ if(!currentUser||!riderProfile?.approved||!riderProfile?.status)return msg('Motoboy precisa estar aprovado e disponível.');
+ try{
+  const result=await realtime.ref('deliveries/'+id).transaction(d=>{
+   if(!d||d.status!=='Aguardando motoboy')return;
+   return {...d,status:'Aceita',riderId:currentUser.uid,riderName:riderProfile.name};
+  },undefined,false);
+  if(!result.committed)msg('Entrega não aceita: pode ter sido assumida por outro motoboy.');
+ }catch(e){msg('Erro ao aceitar entrega: '+e.message+'\nVerifique as regras do Firebase.');}
+}
+async function pickup(id){await changeStatus(id,'Aceita','Em entrega')}
+async function finish(id){await changeStatus(id,'Em entrega','Concluída')}
+async function changeStatus(id,from,to){
+ if(!currentUser||role!=='rider')return msg('Entre como motoboy para atualizar a entrega.');
+ const d=deliveries[id];
+ if(!d||d.riderId!==currentUser.uid||d.status!==from)return msg('O estado da entrega mudou. Atualize e tente novamente.');
+ try{
+  const updates={status:to};
+  if(to==='Concluída')updates.completedAt=firebase.database.ServerValue.TIMESTAMP;
+  await realtime.ref('deliveries/'+id).update(updates);
+  msg(to==='Concluída'?'Entrega concluída com sucesso!':'Retirada confirmada com sucesso!');
+ }catch(e){msg('Não foi possível confirmar: '+e.message+'\nConfira se as regras V7 foram publicadas no Firebase.');}
+}
+
+function render(){
+ const all=Object.entries(deliveries).map(([id,d])=>({id,...d}));
+ const open=all.filter(d=>d.status!=='Concluída');
+ const done=all.filter(d=>d.status==='Concluída');
+ sOpen.textContent=open.length;sDone.textContent=done.length;
+ onlineCount.textContent=Object.values(riders).filter(r=>r.approved&&r.status).length+' disponíveis';
+ sDeliveries.innerHTML=all.length?all.map(d=>`<div class="delivery"><strong>${esc(d.client)}</strong><div class="small">${esc(d.address)}<br>${esc(d.status)} ${d.riderName?'• '+esc(d.riderName):''} • ${money(d.fee)}</div>${d.status==='Aguardando motoboy'?`<button class="ghost" onclick="editFee('${d.id}')">Alterar valor</button>`:''}</div>`).join(''):'<p class="muted">Nenhuma entrega cadastrada.</p>';
+ const pending=Object.entries(riders).filter(([id,r])=>!r.approved);
+ document.getElementById('pendingRiders').innerHTML=pending.length?pending.map(([id,r])=>`<div class="delivery">${esc(r.name)} • ${esc(r.phone)}<button class="primary" onclick="approve('${id}')">Aprovar motoboy</button></div>`).join(''):'<p class="muted">Nenhum cadastro pendente.</p>';
+ if(!currentUser||role!=='rider')return;
+ const mine=all.filter(d=>d.riderId===currentUser.uid),completed=mine.filter(d=>d.status==='Concluída');
+ riderHello.textContent='Olá, '+(riderProfile?.name||'Motoboy')+'!';
+ status.textContent=!riderProfile?.approved?'Aguardando aprovação':riderProfile.status?'Disponível':'Indisponível';
+ toggle.textContent=riderProfile?.status?'Ficar indisponível':'Ficar disponível';
+ toggle.className=riderProfile?.status?'danger':'success';
+ rToday.textContent=completed.length;rMoney.textContent=money(completed.reduce((a,d)=>a+Number(d.fee||0),0));
+ const visible=all.filter(d=>d.riderId===currentUser.uid||(riderProfile?.approved&&riderProfile?.status&&d.status==='Aguardando motoboy'));
+ rDelivery.innerHTML=visible.length?visible.filter(d=>d.status!=='Concluída').map(d=>`<div class="delivery"><div class="row"><strong>${esc(d.client)}</strong><span class="money">${money(d.fee)}</span></div><p>${esc(d.address)}</p>${d.status==='Aguardando motoboy'?`<button class="success" onclick="accept('${d.id}')">Aceitar entrega</button>`:''}${d.status==='Aceita'?`<button class="primary" onclick="pickup('${d.id}')">Confirmar retirada</button>`:''}${d.status==='Em entrega'?`<button class="success" onclick="finish('${d.id}')">Confirmar entrega</button>`:''}</div>`).join(''):'<p class="muted">Nenhuma entrega disponível no momento.</p>';
+ rHistory.innerHTML=completed.length?completed.map(d=>`<div class="delivery">${esc(d.client)} • ${money(d.fee)}</div>`).join(''):'<p class="muted">Sem entregas concluídas.</p>';
+}
+
+// V8: inscrição do aparelho; nunca envie notificações com credenciais no navegador.
+const VAPID_PUBLIC_KEY='BBs4OvhpKY42lMBqn24q_-xEPY2HD02t6HC_J2cNwv_Ce6S3Ke680Ws3_VyECrwl7oVIJofdB_nxyGz-aft81jQ';
+let messaging=null;
+try { if(firebase.messaging.isSupported()) messaging=firebase.messaging(); } catch(e){ console.warn('FCM indisponível',e); }
+async function enablePush(){
+ if(!currentUser||role!=='rider'||!riderProfile?.approved)return msg('Entre como motoboy aprovado para ativar notificações.');
+ if(!messaging||!('serviceWorker' in navigator))return msg('Este navegador não oferece suporte a notificações Web Push.');
+ try {
+  const permission=await Notification.requestPermission();
+  if(permission!=='granted')return msg('Permissão de notificações não concedida.');
+  const sw=await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+  const token=await messaging.getToken({vapidKey:VAPID_PUBLIC_KEY,serviceWorkerRegistration:sw});
+  if(!token)throw Error('O Firebase não retornou um token.');
+  // Somente o próprio motoboy deve escrever seu token; exigirá regras específicas na V8.
+  await realtime.ref('pushTokens/'+currentUser.uid+'/'+encodeURIComponent(token)).set({token,updatedAt:firebase.database.ServerValue.TIMESTAMP});
+  document.getElementById('pushState').textContent='Notificações ativadas neste aparelho.';
+  msg('Aparelho registrado. Os alertas automáticos funcionarão após a configuração do servidor.');
+ } catch(e){msg('Não foi possível ativar: '+e.message+'\nA V8 ainda precisa das regras de pushTokens e do serviço de envio.');}
+}
+if(messaging)messaging.onMessage(payload=>{
+ const title=payload.notification?.title||'Nova entrega disponível';
+ const body=payload.notification?.body||'Abra o Entrega do Luiz para conferir.';
+ if(Notification.permission==='granted'&&navigator.serviceWorker){navigator.serviceWorker.ready.then(sw=>sw.showNotification(title,{body,tag:'entrega-nova',data:{url:location.href}}));}
+});
+
+function logout(){auth.signOut().then(()=>location.reload())}
+auth.onAuthStateChanged(async u=>{if(!u){currentUser=null;role=null;goHome();return}if(role)return;
+ const admin=await realtime.ref('admins/'+u.uid).once('value');if(admin.val()===true)return enterRole('store');
+ const rider=await realtime.ref('riders/'+u.uid).once('value');if(rider.exists())return enterRole('rider');
+});
+goHome();
+</script>
+<!-- original local demo preserved separately -->
+<script type="text/plain" id="original-demo">
+let db=JSON.parse(localStorage.getItem('edl')||'{"rider":null,"deliveries":[],"history":[]}');
+function save(){localStorage.setItem('edl',JSON.stringify(db));render()}function hideAll(){document.querySelectorAll('main>section').forEach(x=>x.classList.add('hidden'))}function show(id){hideAll();document.getElementById(id).classList.remove('hidden');scrollTo(0,0)}function goHome(){show('home')}
+function register(){db.rider={name:regName.value||'Motoboy',phone:regPhone.value,cpf:regCpf.value,pix:regPix.value,moto:regMoto.value,status:true};save();show('rider')}function riderEnter(){db.rider=db.rider||{name:riderName.value||'Motoboy',status:true};save();show('rider')}function storeEnter(){show('store');render()}function toggleStatus(){if(!db.rider)return;db.rider.status=!db.rider.status;save()}
+function createDelivery(){let d={id:'#'+Math.floor(1000+Math.random()*9000),client:client.value||'Cliente',address:address.value||'Endereço não informado',fee:Number(fee.value||7),status:'Aguardando motoboy'};db.deliveries.unshift(d);save();client.value='';address.value=''}
+function accept(id){let d=db.deliveries.find(x=>x.id===id);if(d){d.status='Aceita por '+(db.rider?.name||'motoboy');save()}}function pickup(id){let d=db.deliveries.find(x=>x.id===id);if(d){d.status='Em entrega';save()}}function finish(id){let d=db.deliveries.find(x=>x.id===id);if(d&&d.status!=='Concluída'){d.status='Concluída';db.history.unshift(d);save()}}
+function render(){status.textContent=db.rider?.status?'Disponível':'Indisponível';toggle.textContent=db.rider?.status?'Ficar indisponível':'Ficar disponível';toggle.className=db.rider?.status?'danger':'success';riderHello.textContent='Olá, '+(db.rider?.name||'Motoboy')+'!';let hist=db.history||[];rToday.textContent=hist.length;rMoney.textContent='R$ '+hist.reduce((a,d)=>a+d.fee,0).toFixed(2).replace('.',',');let open=db.deliveries.filter(d=>d.status!=='Concluída');rDelivery.innerHTML=(db.rider?.status&&open.length)?open.map(d=>`<div class="delivery"><div class="row"><strong>${d.id}</strong><span class="money">R$ ${d.fee.toFixed(2).replace('.',',')}</span></div><p>${d.client}<br>${d.address}</p>${d.status==='Aguardando motoboy'?`<button class="success" onclick="accept('${d.id}')">Aceitar entrega</button>`:''}${d.status.startsWith('Aceita')?`<button class="primary" onclick="pickup('${d.id}')">Confirmar retirada</button>`:''}${d.status==='Em entrega'?`<button class="success" onclick="finish('${d.id}')">Confirmar entrega</button>`:''}</div>`).join(''):'<p class="muted">Nenhuma entrega disponível no momento.</p>';rHistory.innerHTML=hist.length?hist.map(d=>`<div class="delivery"><strong>${d.id}</strong> • R$ ${d.fee.toFixed(2).replace('.',',')}</div>`).join(''):'<p class="muted">Sem entregas concluídas.</p>';sOpen.textContent=open.length;sDone.textContent=db.deliveries.filter(d=>d.status==='Concluída').length;onlineCount.textContent=(db.rider?.status?1:0)+' disponível';sDeliveries.innerHTML=db.deliveries.length?db.deliveries.map(d=>`<div class="delivery"><strong>${d.id} • ${d.client}</strong><div class="small">${d.address}<br>Status: ${d.status}</div></div>`).join(''):'<p class="muted">Nenhuma entrega cadastrada.</p>'}
+render();goHome();
+</script></body></html>
