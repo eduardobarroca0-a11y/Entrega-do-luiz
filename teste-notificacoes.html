@@ -8,7 +8,7 @@
 (async () => {
   try {
     const registro = await navigator.serviceWorker.register('./teste-sw.js', {scope:'./teste-diagnostico/'});
-    await navigator.serviceWorker.ready.catch(() => {});
+    
     document.getElementById('resultado').textContent =
       'SUCESSO: Service Worker registrado!';
   } catch (erro) {
