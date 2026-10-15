@@ -7,7 +7,7 @@
 <script>
 (async () => {
   try {
-    const registro = await navigator.serviceWorker.register('firebase-messaging-diagnostico.js.', {scope:'./teste-diagnostico/'});
+    const registro = await navigator.serviceWorker.register('firebase-messaging-sw.js', {scope:'./teste-diagnostico/'});
     
     document.getElementById('resultado').textContent =
       'SUCESSO: Service Worker registrado!';
