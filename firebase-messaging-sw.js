@@ -10,9 +10,9 @@ firebase.initializeApp({
   appId: "1:838114642177:web:fed4404da01683070f7300"
 });
 
-const messaging = firebase.messaging();
+//const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
+/*messaging.onBackgroundMessage((payload) => {
   const title = payload.notification?.title || 'Entrega do Luiz';
   const options = {
     body: payload.notification?.body || 'Nova entrega disponível!',
@@ -23,7 +23,7 @@ messaging.onBackgroundMessage((payload) => {
   };
 
   self.registration.showNotification(title, options);
-});
+});*/
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
