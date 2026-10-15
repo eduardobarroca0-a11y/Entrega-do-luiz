@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<h2>Teste Service Worker</h2>
+<p id="resultado">Testando...</p>
+<script>
+(async () => {
+  try {
+    const registro = await navigator.serviceWorker.register('./teste-sw.js', {scope:'./teste-diagnostico/'});
+    await navigator.serviceWorker.ready.catch(() => {});
+    document.getElementById('resultado').textContent =
+      'SUCESSO: Service Worker registrado!';
+  } catch (erro) {
+    document.getElementById('resultado').textContent =
+      'ERRO: ' + erro.message;
+  }
+})();
+</script>
+</html>
