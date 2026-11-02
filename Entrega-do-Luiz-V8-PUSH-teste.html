@@ -81,11 +81,39 @@ function startListening(){
 }
 async function toggleStatus(){if(!riderProfile?.approved)return msg('Aguarde aprovação da lanchonete.');await realtime.ref('riders/'+currentUser.uid+'/status').set(!riderProfile.status)}
 async function approve(uid){if(role!=='store')return;await realtime.ref('riders/'+uid+'/approved').set(true)}
+async function 
 async function createDelivery(){
- if(role!=='store')return;
- const name=client.value.trim(),addr=address.value.trim(),value=Number(fee.value);
- if(!name||!addr||fee.value.trim()===''||!Number.isFinite(value)||value<0)return msg('Preencha cliente, endereço e valor válido.');
- try{await realtime.ref('deliveries').push({client:name,address:addr,fee:value,status:'Aguardando motoboy',riderId:'',createdAt:firebase.database.ServerValue.TIMESTAMP});client.value='';address.value=''}catch(e){msg('Erro ao criar: '+e.message)}
+  if(currentRole!=='store')return msg('Acesso restrito à lanchonete.');
+  const name=client.value.trim(),addr=address.value.trim(),value=Number(fee.value);
+  if(!name||!addr||fee.value.trim()===''||!Number.isFinite(value)||value<0)return msg('Preencha cliente, endereço e valor válido.');
+  try{
+    const ref=await realtime.ref('deliveries').push({
+      client:name,address:addr,fee:value,
+      status:'Aguardando motoboy',riderId:'',
+      createdAt:firebase.database.ServerValue.TIMESTAMP
+    });
+    client.value='';address.value='';
+    try{
+      const idToken=await auth.currentUser.getIdToken();
+      const response=await fetch('https://entrega-do-luiz-push.eduardobarroca0.workers.dev/notify',{
+        method:'POST',
+        headers:{
+          'content-type':'application/json',
+          'authorization':'Bearer '+idToken
+        },
+        body:JSON.stringify({deliveryId:ref.key})
+      });
+      const result=await response.json();
+      if(!response.ok)msg('Entrega criada, mas falhou o aviso: '+(result.error||response.status));
+      else msg('Entrega criada! Avisos enviados: '+(result.sent||0)+'; falhas: '+(result.failed||0));
+    }catch(pushError){
+      msg('Entrega criada, mas falhou o aviso: '+pushError.message);
+    }
+  }catch(e){
+    msg('Erro ao criar: '+e.message);
+  }
+}
+
 }
 async function editFee(id){
  if(role!=='store'||!currentUser)return msg('Acesso restrito à lanchonete.');
