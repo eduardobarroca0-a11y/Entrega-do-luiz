@@ -114,7 +114,7 @@ async function createDelivery(){
   }
 }
 
-}
+
 async function editFee(id){
  if(role!=='store'||!currentUser)return msg('Acesso restrito à lanchonete.');
  const d=deliveries[id];
