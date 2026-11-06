@@ -83,7 +83,7 @@ async function toggleStatus(){if(!riderProfile?.approved)return msg('Aguarde apr
 async function approve(uid){if(role!=='store')return;await realtime.ref('riders/'+uid+'/approved').set(true)}
 
 async function createDelivery(){
-  if(currentRole!=='store')return msg('Acesso restrito à lanchonete.');
+  if(Role!=='store')return msg('Acesso restrito à lanchonete.');
   const name=client.value.trim(),addr=address.value.trim(),value=Number(fee.value);
   if(!name||!addr||fee.value.trim()===''||!Number.isFinite(value)||value<0)return msg('Preencha cliente, endereço e valor válido.');
   try{
